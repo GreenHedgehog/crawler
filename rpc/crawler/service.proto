@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package crawler;
+option go_package = "./crawler";
+
+service Crawler {
+    rpc Fetch(FetchRequest) returns (FetchResponse);
+    rpc List(ListRequest) returns (ListResponse);
+}
+
+message FetchRequest {
+    string url = 1;
+}
+
+message FetchResponse {}
+
+
+message ListRequest {
+    string page_token = 1;
+    uint32 page_size = 2;
+    SearchParams search_params = 3;
+}
+
+message ListResponse {
+    repeated Product list = 1;
+    string next_page_token = 2;
+}
+
+
+message Product {
+    // @inject_tag: bson:"name"
+    string name = 1;
+    // @inject_tag: bson:"price"
+    uint32 price = 2;
+    // @inject_tag: bson:"price_changes_counter"
+    uint32 price_changes_counter = 3;
+    // @inject_tag: bson:"last_update_ts"
+    uint64 last_update_ts = 4;
+    // @inject_tag: bson:"_id"
+    string id = 5;
+}
+
+message SearchParams {
+    enum Field {
+        DEFAULT = 0; // database order
+        PRICE = 1;
+        PRICE_CHANGES_COUNTER = 2;
+        LAST_UPDATE_TS = 3;
+        NAME = 4;
+    }
+    enum Order {
+        ASC = 0;
+        DESC = 1;
+    }
+
+    Field order_by = 1;
+    Order order_method = 2;
+}
